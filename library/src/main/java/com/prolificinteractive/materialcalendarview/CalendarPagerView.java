@@ -56,7 +56,14 @@ abstract class CalendarPagerView extends ViewGroup
     this.firstViewDay = firstViewDay;
     this.firstDayOfWeek = firstDayOfWeek;
     this.showWeekDays = showWeekDays;
-    this.weekDayColorsArray = view.state().getWeekDayColorsArray();
+
+    int[] weekDayColors = view.state().getWeekDayColorsArray();
+
+    if (firstDayOfWeek != DayOfWeek.MONDAY) {
+      this.weekDayColorsArray = getRelativeWeekLabelColorsArray(firstDayOfWeek, weekDayColors);
+    } else {
+      this.weekDayColorsArray = weekDayColors;
+    }
 
     otherMonthsDateColor = view.getOtherMonthsDateColor();
 
@@ -67,6 +74,32 @@ abstract class CalendarPagerView extends ViewGroup
       buildWeekDays(resetAndGetWorkingCalendar());
     }
     buildDayViews(dayViews, resetAndGetWorkingCalendar());
+  }
+
+  private int[] getRelativeWeekLabelColorsArray(DayOfWeek firstDayOfWeek, int[] weekDayColorsArray) {
+    int startPosition = 0;
+
+    switch (firstDayOfWeek) {
+      case TUESDAY: startPosition = 1; break;
+      case WEDNESDAY: startPosition = 2; break;
+      case THURSDAY: startPosition = 3; break;
+      case FRIDAY: startPosition = 4; break;
+      case SATURDAY: startPosition = 5; break;
+      case SUNDAY: startPosition = 6; break;
+    }
+
+    int newInsertPosition = 0;
+    int[] result = new int[7];
+
+    for (int i = startPosition; i < weekDayColorsArray.length; i++) {
+      result[newInsertPosition++] = weekDayColorsArray[i];
+    }
+
+    for (int i = 0; i < startPosition; i++) {
+      result[newInsertPosition++] = weekDayColorsArray[i];
+    }
+
+    return result;
   }
 
   private void buildWeekDays(LocalDate calendar) {
