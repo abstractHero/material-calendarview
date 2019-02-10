@@ -1,5 +1,11 @@
 <img src="/images/hero.png"/>
 
+# It's a forked version with some features.
+There are two things I've added to the original library:
+
+- the first one is a possibility to set a color for each weekday label through setting the `mcv_weekDayColors` param in the XML, which requires a color array.
+- the second one is that you can dye date's text with color outside of the current month if they are visible applying the `mcv_otherMonthsDateColor` attribute in your XML.
+
 # Material Calendar View 
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Material%20Calendar%20View-blue.svg?style=flat)](https://android-arsenal.com/details/1/1531) [![](https://jitpack.io/v/prolificinteractive/material-calendarview.svg)](https://jitpack.io/#prolificinteractive/material-calendarview) [![Travis branch](https://img.shields.io/travis/prolificinteractive/material-calendarview.svg?maxAge=2592000)](https://travis-ci.org/prolificinteractive/material-calendarview)
 
