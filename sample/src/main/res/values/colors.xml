@@ -2,4 +2,16 @@
 <resources>
   <color name="sample_primary">#0093FF</color>
   <color name="sample_accent">#006BBA</color>
+
+  <array name="week_days">
+    <item>#687C8B</item>
+    <item>#687C8B</item>
+    <item>#687C8B</item>
+    <item>#687C8B</item>
+    <item>#687C8B</item>
+    <item>#e25353</item>
+    <item>#e25353</item>
+  </array>
+
+  <color name="other_months_date_color">#009688</color>
 </resources>

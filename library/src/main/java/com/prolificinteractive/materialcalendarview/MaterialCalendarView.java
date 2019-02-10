@@ -27,11 +27,17 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.prolificinteractive.materialcalendarview.format.ArrayWeekDayFormatter;
 import com.prolificinteractive.materialcalendarview.format.DayFormatter;
 import com.prolificinteractive.materialcalendarview.format.MonthArrayTitleFormatter;
 import com.prolificinteractive.materialcalendarview.format.TitleFormatter;
 import com.prolificinteractive.materialcalendarview.format.WeekDayFormatter;
+
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.temporal.WeekFields;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -40,9 +46,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import org.threeten.bp.DayOfWeek;
-import org.threeten.bp.LocalDate;
-import org.threeten.bp.temporal.WeekFields;
 
 /**
  * <p>
@@ -239,6 +242,8 @@ public class MaterialCalendarView extends ViewGroup {
   private boolean allowClickDaysOutsideCurrentMonth = true;
   private DayOfWeek firstDayOfWeek;
   private boolean showWeekDays;
+  private int[] weekDayColorsArray = new int[7];
+  private int otherMonthsDateColor = 0;
 
   private State state;
 
@@ -309,11 +314,20 @@ public class MaterialCalendarView extends ViewGroup {
 
       showWeekDays = a.getBoolean(R.styleable.MaterialCalendarView_mcv_showWeekDays, true);
 
-      newState()
+      StateBuilder stateBuilder = newState()
           .setFirstDayOfWeek(firstDayOfWeek)
           .setCalendarDisplayMode(CalendarMode.values()[calendarModeIndex])
           .setShowWeekDays(showWeekDays)
-          .commit();
+          .setWeekDayColors(weekDayColorsArray);
+
+      int colorsId = a.getResourceId(R.styleable.MaterialCalendarView_mcv_weekDayColors, -1);
+      try {
+        int[] weekDayColorsArray = a.getResources().getIntArray(colorsId);
+        stateBuilder.setWeekDayColors(weekDayColorsArray);
+      } catch (Exception e) {
+      }
+
+      stateBuilder.commit();
 
       setSelectionMode(a.getInteger(
           R.styleable.MaterialCalendarView_mcv_selectionMode,
@@ -363,6 +377,8 @@ public class MaterialCalendarView extends ViewGroup {
               getThemeAccentColor(context)
           )
       );
+
+      otherMonthsDateColor = a.getColor(R.styleable.MaterialCalendarView_mcv_otherMonthsDateColor, 0);
 
       CharSequence[] array = a.getTextArray(R.styleable.MaterialCalendarView_mcv_weekDayLabels);
       if (array != null) {
@@ -898,6 +914,18 @@ public class MaterialCalendarView extends ViewGroup {
    */
   public CalendarDay getMaximumDate() {
     return maxDate;
+  }
+
+  /**
+   * @return the color array of week days
+   */
+  public int[] getWeekDayColorsArray() { return weekDayColorsArray; }
+
+  /**
+   * @return the color that dates of other month is dyed with
+   */
+  public int getOtherMonthsDateColor() {
+      return otherMonthsDateColor;
   }
 
   /**
@@ -1799,6 +1827,7 @@ public class MaterialCalendarView extends ViewGroup {
     private final CalendarDay maxDate;
     private final boolean cacheCurrentPosition;
     private final boolean showWeekDays;
+    private int[] weekDayColorsArray;
 
     private State(final StateBuilder builder) {
       calendarMode = builder.calendarMode;
@@ -1807,7 +1836,10 @@ public class MaterialCalendarView extends ViewGroup {
       maxDate = builder.maxDate;
       cacheCurrentPosition = builder.cacheCurrentPosition;
       showWeekDays = builder.showWeekDays;
+      weekDayColorsArray = builder.weekDayColorsArray;
     }
+
+    public int[] getWeekDayColorsArray() { return weekDayColorsArray; }
 
     /**
      * Modify parameters from current state.
@@ -1824,6 +1856,7 @@ public class MaterialCalendarView extends ViewGroup {
     private CalendarDay minDate = null;
     private CalendarDay maxDate = null;
     private boolean showWeekDays;
+    private int[] weekDayColorsArray = new int[7];
 
     public StateBuilder() {
       calendarMode = CalendarMode.MONTHS;
@@ -1838,6 +1871,7 @@ public class MaterialCalendarView extends ViewGroup {
       maxDate = state.maxDate;
       cacheCurrentPosition = state.cacheCurrentPosition;
       showWeekDays = state.showWeekDays;
+      weekDayColorsArray = state.weekDayColorsArray;
     }
 
     /**
@@ -1915,6 +1949,11 @@ public class MaterialCalendarView extends ViewGroup {
      */
     public StateBuilder isCacheCalendarPositionEnabled(final boolean cacheCurrentPosition) {
       this.cacheCurrentPosition = cacheCurrentPosition;
+      return this;
+    }
+
+    public StateBuilder setWeekDayColors(final int[] weekDayColorsArray) {
+      this.weekDayColorsArray = weekDayColorsArray;
       return this;
     }
 

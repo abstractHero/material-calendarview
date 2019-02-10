@@ -13,6 +13,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatCheckedTextView;
 import android.text.SpannableString;
@@ -41,6 +42,7 @@ import static com.prolificinteractive.materialcalendarview.MaterialCalendarView.
   private Drawable mCircleDrawable;
   private DayFormatter formatter = DayFormatter.DEFAULT;
   private DayFormatter contentDescriptionFormatter = formatter;
+  private int otherMonthsDateColor = 0;
 
   private boolean isInRange = true;
   private boolean isInMonth = true;
@@ -67,6 +69,10 @@ import static com.prolificinteractive.materialcalendarview.MaterialCalendarView.
   public void setDay(CalendarDay date) {
     this.date = date;
     setText(getLabel());
+  }
+
+  public void setOtherMonthsDateColor(@ColorInt int color) {
+    otherMonthsDateColor = color;
   }
 
   /**
@@ -169,8 +175,12 @@ import static com.prolificinteractive.materialcalendarview.MaterialCalendarView.
     }
 
     if (!isInMonth && shouldBeVisible) {
-      setTextColor(getTextColors().getColorForState(
-          new int[] { -android.R.attr.state_enabled }, Color.GRAY));
+      if (otherMonthsDateColor != 0) {
+        setTextColor(otherMonthsDateColor);
+      } else {
+        setTextColor(getTextColors().getColorForState(
+                new int[] { -android.R.attr.state_enabled }, Color.GRAY));
+      }
     }
     setVisibility(shouldBeVisible ? View.VISIBLE : View.INVISIBLE);
   }

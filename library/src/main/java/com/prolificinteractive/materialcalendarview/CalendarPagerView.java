@@ -7,16 +7,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView.ShowOtherDates;
 import com.prolificinteractive.materialcalendarview.format.DayFormatter;
 import com.prolificinteractive.materialcalendarview.format.WeekDayFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.TemporalField;
 import org.threeten.bp.temporal.WeekFields;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static com.prolificinteractive.materialcalendarview.MaterialCalendarView.SHOW_DEFAULTS;
 import static com.prolificinteractive.materialcalendarview.MaterialCalendarView.showOtherMonths;
@@ -36,6 +39,8 @@ abstract class CalendarPagerView extends ViewGroup
   private CalendarDay firstViewDay;
   private CalendarDay minDate = null;
   private CalendarDay maxDate = null;
+  private int[] weekDayColorsArray;
+  private int otherMonthsDateColor = 0;
   protected boolean showWeekDays;
 
   private final Collection<DayView> dayViews = new ArrayList<>();
@@ -51,6 +56,9 @@ abstract class CalendarPagerView extends ViewGroup
     this.firstViewDay = firstViewDay;
     this.firstDayOfWeek = firstDayOfWeek;
     this.showWeekDays = showWeekDays;
+    this.weekDayColorsArray = view.state().getWeekDayColorsArray();
+
+    otherMonthsDateColor = view.getOtherMonthsDateColor();
 
     setClipChildren(false);
     setClipToPadding(false);
@@ -79,6 +87,7 @@ abstract class CalendarPagerView extends ViewGroup
     DayView dayView = new DayView(getContext(), day);
     dayView.setOnClickListener(this);
     dayView.setOnLongClickListener(this);
+    dayView.setOtherMonthsDateColor(otherMonthsDateColor);
     dayViews.add(dayView);
     addView(dayView, new LayoutParams());
   }
@@ -113,8 +122,17 @@ abstract class CalendarPagerView extends ViewGroup
   }
 
   public void setWeekDayTextAppearance(int taId) {
+    int index = 0;
+
     for (WeekDayView weekDayView : weekDayViews) {
       weekDayView.setTextAppearance(getContext(), taId);
+
+      try {
+        int weekDayColor = weekDayColorsArray[index++];
+        if (weekDayColor != 0) weekDayView.setWeekDayColor(weekDayColor);
+      } catch (ArrayIndexOutOfBoundsException e) {
+        System.err.println("There is no color for a " + index + " day");
+      }
     }
   }
 
